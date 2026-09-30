@@ -64,6 +64,8 @@ A terminal screensaver can leave the windows to the built-in launcher, which ope
 exec omarchy-launch-screensaver --exec "${0%/*}/my-screensaver"
 ```
 
+Arguments after the program are passed to it, so `--exec` comes last: `omarchy-launch-screensaver --exec "${0%/*}/my-screensaver" --no-intro`.
+
 The program takes over what `omarchy-screensaver` does inside those terminals: exit on a keypress or when its window loses focus, close every screensaver window on the way out (`pkill -f '[o]rg.omarchy.screensaver'`), and show the cursor again if it hid it.
 
 Full schema: [`shell/services/PluginRegistry.qml`](../shell/services/PluginRegistry.qml).

@@ -106,7 +106,7 @@ chmod +x "$plugin_dir/saver"
 (
   cd "$plugin_dir"
   PATH="$tmpdir/bin:$PATH" TEST_DIR="$tmpdir" XDG_RUNTIME_DIR="$tmpdir" HYPRLAND_INSTANCE_SIGNATURE=test \
-    timeout 10 "$ROOT/bin/omarchy-launch-screensaver" force --exec ./saver
+    timeout 10 "$ROOT/bin/omarchy-launch-screensaver" force --exec ./saver --no-boot "two words]]"
 )
 mapfile -t dispatched <"$tmpdir/dispatched"
 (( ${#dispatched[@]} == 2 )) || fail "--exec opens a screensaver on each monitor" "$(<"$tmpdir/calls")"
@@ -114,9 +114,12 @@ command=$(lua -e 'hl = { dsp = { exec_cmd = function(command) io.write(command) 
   fail "--exec keeps the dispatched command valid Lua" "${dispatched[0]}"
 command=${command#\[workspace special:screensaver-DP-1\] }
 eval "words=($command)"
-[[ ${words[-1]} == "$plugin_dir/saver" && ${words[-2]} == -e ]] ||
+[[ ${words[-3]} == "$plugin_dir/saver" && ${words[-4]} == -e ]] ||
   fail "--exec runs the program by absolute path as a single argument" "$command"
 pass "--exec runs the program by absolute path as a single argument"
+[[ ${words[-2]} == --no-boot && ${words[-1]} == "two words]]" ]] ||
+  fail "--exec passes the arguments after the program through intact" "$command"
+pass "--exec passes the arguments after the program through intact"
 kill "$(<"$tmpdir/socat.pid")"
 
 printf 'not executable\n' >"$plugin_dir/plain"
